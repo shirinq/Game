@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Game</string>
+    <string name="button_left">Tic Tac Toe</string>
+    <string name="button_right">4 in a Row</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="TicTacToe_fragment">Game: Tic Tac Toe</string>
+    <string name="Row_fragment">Game: 4 in a Row</string>
+    <string name="X">X</string>
+    <string name="O">O</string>
+    <item type="id" name="button_id1"/>
+</resources>
