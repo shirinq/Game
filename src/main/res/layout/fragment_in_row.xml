@@ -37,6 +37,7 @@
             android:padding="25dp"
             android:text="6 x 6"
             android:textSize="20sp" />
+
     </LinearLayout>
 
     <GridLayout

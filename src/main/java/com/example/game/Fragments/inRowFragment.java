@@ -1,28 +1,23 @@
 package com.example.game.Fragments;
 
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.RadioButton;
-import android.widget.Toast;
 
 import com.example.game.R;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
-import org.w3c.dom.Text;
+import java.util.Arrays;
 
 
 /**
@@ -35,8 +30,9 @@ public class inRowFragment extends Fragment {
     RadioButton mRadioButton5;
     RadioButton mRadioButton6;
     GridLayout mGridLayout;
-    Button[] buttons;
+    Button[][] buttons;
     int turn = 0;
+    View view;
 
     public inRowFragment() {
         // Required empty public constructor
@@ -47,7 +43,7 @@ public class inRowFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_in_row, container, false);
+        view = inflater.inflate(R.layout.fragment_in_row, container, false);
 
         mRadioButton5 = view.findViewById(R.id.radioButton5);
         mRadioButton6 = view.findViewById(R.id.radioButton6);
@@ -68,13 +64,18 @@ public class inRowFragment extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 mRadioButton5.setVisibility(View.INVISIBLE);
                 mRadioButton6.setVisibility(View.INVISIBLE);
+
                 mGridLayout.setRowCount(number);
                 mGridLayout.setColumnCount(number);
-                ButtonGenerator(number * number);
-                for (int i = 0; i < number * number; i++) {
-                    mGridLayout.addView(buttons[i], 130, 130);
+
+                ButtonGenerator(number);
+
+                for (int i = 0; i < number; i++) {
+                    for (int j = 0; j < number; j++)
+                        mGridLayout.addView(buttons[i][j], 130, 130);
                 }
                 setOnclick(number);
             }
@@ -82,43 +83,147 @@ public class inRowFragment extends Fragment {
     }
 
     private void setOnclick(final int number) {
-        for (final Button button : buttons) {
-            button.setOnClickListener(new View.OnClickListener() {
-                @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-                @Override
-                public void onClick(View view) {
-                    ColorDrawable colorBlue = new ColorDrawable();
-                    ColorDrawable colorRed = new ColorDrawable();
-                    colorBlue.setColor(Color.BLUE);
-                    colorRed.setColor(Color.RED);
-                    if (turn % 2 == 0)
-                        button.setBackground(colorBlue);
-                    else
-                        button.setBackground(colorRed);
-                    turn++;
-                    button.setShadowLayer(360, 120, 120, Color.BLACK);
-                    button.setEnabled(false);
-                    for (int j = 0; j < buttons.length; j++) {
-                        if (buttons[j].equals(button) && j > 4)
-                            buttons[j - number].setEnabled(true);
-                        //if(buttons.length-number<j&&j<buttons.length)
+        for (int i = 0; i < number; i++)
+            for (final Button button : buttons[i]) {
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (turn % 2 == 0) {
+                            button.getBackground().setColorFilter(Color.BLUE, PorterDuff.Mode.DARKEN);
+                            button.setText("Blue");
+                            button.setTextColor(Color.TRANSPARENT);
+
+                        } else {
+                            button.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.DARKEN);
+                            button.setText("Red");
+                            button.setTextColor(Color.TRANSPARENT);
+                        }
+                        turn++;
+                        button.setEnabled(false);
+                        for (int i = 0; i < number; i++)
+                            for (int j = 0; j < number; j++) {
+                                if (buttons[i][j].equals(button)) {
+                                    subArray(number, i, j);
+                                    if (i >= 1)
+                                        buttons[i - 1][j].setEnabled(true);
+                                }
+                            }
                     }
-                }
-            });
-        }
+                });
+            }
     }
 
     private void ButtonGenerator(int length) {
-        buttons = new Button[length];
+        buttons = new Button[length][length];
         for (int i = 0; i < length; i++) {
-            buttons[i] = new Button(getActivity());
-            if (i < length - Math.sqrt(length))
-                buttons[i].setEnabled(false);
+            for (int j = 0; j < length; j++) {
+                buttons[i][j] = new Button(getActivity());
+                if (i < length - 1)
+                    buttons[i][j].setEnabled(false);
+            }
         }
     }
 
-    private void Winner(int number, Button subButton) {
+    private void subArray(int number, int row, int column) {
+        Winner(number, buttons[row]);//Horizontal
+
+        Button[] subVertical = new Button[number];
+        for (int k = 0; k < number; k++) {
+            subVertical[k] = buttons[k][column];
+        }
+        Winner(number, subVertical);//Vertical
+        /**
+         * Diagonal
+         */
+        while (row >0 || column>0){
+            row--;
+            column--;
+        }
+        if (column == number - 1 && (row!=number-1 && row !=0)) {
+            if (row < (number / 2)) {
+                int temp = column;
+                column = row;
+                row = temp;
+            } else if (row >= Math.ceil(number / 2)) {
+                row = column - row;
+            }
+        } else if (column == 0 && (row!=number-1 && row !=0)) {
+            if (row < (number / 2)) {
+                int temp = row;
+                row = number - 1;
+                column = row - temp;
+            } else if (row >= Math.ceil(number / 2)) {
+                int temp = column;
+                column = row;
+                row = temp;
+            }
+        }
+        if (row == number - 1) {
+            Button[] subButton = new Button[number];
+            int index = 0;
+
+            if (column < (number / 2)) {
+                for (int i = number - 1, j = column; i >= 0 && j < number; i--, j++, index++)
+                    subButton[index] = buttons[i][j];
+            } else if (column >= Math.ceil(number / 2)) {
+                for (int i = number - 1, j = column; i >= 0 && j >= 0; i--, j--, index++)
+                    subButton[index] = buttons[i][j];
+            }
+            Winner(number, subButton);
+        }//bottom row
+
+        else if (row == 0) {
+            Button[] subButton = new Button[number];
+            int index = 0;
+            if (column < (number / 2)) {
+                for (int i = 0, j = column; i < number && j < number; i++, j++, index++)
+                    subButton[index] = buttons[i][j];
+            } else if (column >= Math.ceil(number / 2)) {
+                for (int i = 0, j = column; i >= 0 && j >= 0; i++, j--, index++)
+                    subButton[index] = buttons[i][j];
+            }
+            Winner(number, subButton);
+        }//top row
+
+
+    }
+
+    private void Winner(int number, Button[] subButton) {
+        for (int i = 0; i < number / 2; i++) {
+            int counter = 0;
+            try {
+                String temp = subButton[i].getText().toString();
+                if (temp.equals(""))
+                    continue;
+                for (int j = i; j < i + 4; j++) {
+                    if (temp.equals(subButton[j].getText().toString()))
+                        counter++;
+                }
+                if (counter == 4) {
+                    for (int j = 0; j < number; j++)
+                        for (Button button : buttons[j])
+                            button.setEnabled(false);
+                    Snackbar.make(view, temp + " is winner", BaseTransientBottomBar.LENGTH_INDEFINITE)
+                            .setAction("OK", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    getActivity().getSupportFragmentManager().beginTransaction()
+                                            .replace(R.id.container_layout, new inRowFragment())
+                                            .commit();
+                                }
+                            }).show();
+                    break;
+                }
+            } catch (NullPointerException e) {
+                subButton[i] = new Button(getActivity());
+                subButton[i].setText("");
+                i--;
+            }
+
+        }
+
 
     }
 
 }
+//Winner(number, Arrays.copyOfRange(buttons, k, k + number));
