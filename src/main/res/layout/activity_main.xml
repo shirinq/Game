@@ -14,21 +14,24 @@
         android:orientation="vertical">
 
         <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.App.Button"
                 android:id="@+id/Btn_TicTacToe"
-                android:layout_width="205dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:layout_gravity="start"
                 android:text="@string/button_left" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.App.Button"
                 android:id="@+id/btn_4inRow"
-                android:layout_width="205dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"
                 android:text="@string/button_right" />
 
         </LinearLayout>
@@ -38,7 +41,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:orientation="horizontal"/>
+            android:orientation="horizontal" />
 
 
     </LinearLayout>

@@ -132,61 +132,92 @@ public class inRowFragment extends Fragment {
             subVertical[k] = buttons[k][column];
         }
         Winner(number, subVertical);//Vertical
-        /**
-         * Diagonal
-         */
-        while (row >0 || column>0){
-            row--;
-            column--;
+
+        // top-left to bottom-right - green diagonals
+        int blue, red;
+        for (int rowStart = 0; rowStart < buttons.length - 4; rowStart++) {
+            blue = 0;
+            red = 0;
+            for (int i = rowStart, col = 0; i < buttons.length && col < buttons.length; i++, col++) {
+                if (buttons[i][col].getText().equals("Blue")) {
+                    blue++;
+                    if (blue >= 4) {
+                        for (int j = 0; j < number; j++)
+                            for (Button button : buttons[j])
+                                button.setEnabled(false);
+                        Snackbar.make(view, "Blue is winner", BaseTransientBottomBar.LENGTH_INDEFINITE)
+                                .setAction("OK", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        getActivity().getSupportFragmentManager().beginTransaction()
+                                                .replace(R.id.container_layout, new inRowFragment())
+                                                .commit();
+                                    }
+                                }).show();
+                    }
+                } else if (buttons[i][col].getText().equals("Red")) {
+                    red++;
+                    if (red >= 4) {
+                        for (int j = 0; j < number; j++)
+                            for (Button button : buttons[j])
+                                button.setEnabled(false);
+                        Snackbar.make(view, "Red is winner", BaseTransientBottomBar.LENGTH_INDEFINITE)
+                                .setAction("OK", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        getActivity().getSupportFragmentManager().beginTransaction()
+                                                .replace(R.id.container_layout, new inRowFragment())
+                                                .commit();
+                                    }
+                                }).show();
+                    }
+                }
+            }
         }
-        if (column == number - 1 && (row!=number-1 && row !=0)) {
-            if (row < (number / 2)) {
-                int temp = column;
-                column = row;
-                row = temp;
-            } else if (row >= Math.ceil(number / 2)) {
-                row = column - row;
-            }
-        } else if (column == 0 && (row!=number-1 && row !=0)) {
-            if (row < (number / 2)) {
-                int temp = row;
-                row = number - 1;
-                column = row - temp;
-            } else if (row >= Math.ceil(number / 2)) {
-                int temp = column;
-                column = row;
-                row = temp;
+
+// top-left to bottom-right - red diagonals
+        int rowStart = 0;
+        for (int colStart = 1; colStart < buttons.length - 4; colStart++) {
+            blue = 0;
+            red = 0;
+            for (int i = 0, col = colStart; i < buttons.length && col < buttons.length; i++, col++) {
+                if (buttons[i][col].getText().equals("Blue")) {
+                    blue++;
+                    if (blue >= 4) {
+                        for (int j = 0; j < number; j++)
+                            for (Button button : buttons[j])
+                                button.setEnabled(false);
+                        Snackbar.make(view, "Blue is winner", BaseTransientBottomBar.LENGTH_INDEFINITE)
+                                .setAction("OK", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        getActivity().getSupportFragmentManager().beginTransaction()
+                                                .replace(R.id.container_layout, new inRowFragment())
+                                                .commit();
+                                    }
+                                }).show();
+                    }
+                } else if (buttons[i][col].getText().equals("Red")) {
+                    red++;
+                    if (red >= 4) {
+                        for (int j = 0; j < number; j++)
+                            for (Button button : buttons[j])
+                                button.setEnabled(false);
+                        Snackbar.make(view, "Red is winner", BaseTransientBottomBar.LENGTH_INDEFINITE)
+                                .setAction("OK", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        getActivity().getSupportFragmentManager().beginTransaction()
+                                                .replace(R.id.container_layout, new inRowFragment())
+                                                .commit();
+                                    }
+                                }).show();
+                    }
+                }
             }
         }
-        if (row == number - 1) {
-            Button[] subButton = new Button[number];
-            int index = 0;
-
-            if (column < (number / 2)) {
-                for (int i = number - 1, j = column; i >= 0 && j < number; i--, j++, index++)
-                    subButton[index] = buttons[i][j];
-            } else if (column >= Math.ceil(number / 2)) {
-                for (int i = number - 1, j = column; i >= 0 && j >= 0; i--, j--, index++)
-                    subButton[index] = buttons[i][j];
-            }
-            Winner(number, subButton);
-        }//bottom row
-
-        else if (row == 0) {
-            Button[] subButton = new Button[number];
-            int index = 0;
-            if (column < (number / 2)) {
-                for (int i = 0, j = column; i < number && j < number; i++, j++, index++)
-                    subButton[index] = buttons[i][j];
-            } else if (column >= Math.ceil(number / 2)) {
-                for (int i = 0, j = column; i >= 0 && j >= 0; i++, j--, index++)
-                    subButton[index] = buttons[i][j];
-            }
-            Winner(number, subButton);
-        }//top row
-
-
     }
+
 
     private void Winner(int number, Button[] subButton) {
         for (int i = 0; i < number / 2; i++) {
